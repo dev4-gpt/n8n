@@ -1,0 +1,1080 @@
+{
+  "name": "job_enrich_pipeline",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -980,
+        0
+      ],
+      "id": "c5f6a7b8-9c0d-4e1f-8a2b-3c4d5e6f7a8b",
+      "name": "Manual Trigger"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ab12cd34-56ef-78a9-b0cd-12ef34ab56cd",
+              "name": "spreadsheetId",
+              "value": "1QCRWbi-OQvlWemGdLs5O21g7nwO9_6dMiZZLBXTNtPI",
+              "type": "string"
+            },
+            {
+              "id": "cd34ab56-ef78-90ab-c1de-34ab56cd78ef",
+              "name": "sheetName",
+              "value": "JobPipeline",
+              "type": "string"
+            },
+            {
+              "id": "e0f1a2b3-c4d5-4e6f-8a9b-0c1d2e3f4a5b",
+              "name": "resumeDocUrl",
+              "value": "https://docs.google.com/document/d/REPLACE_ME/edit",
+              "type": "string"
+            },
+            {
+              "id": "f1a2b3c4-d5e6-4f7a-8b9c-0d1e2f3a4b5c",
+              "name": "fitVerdictThreshold",
+              "value": "0.5",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -780,
+        0
+      ],
+      "id": "a1b2c3d4-e5f6-47a8-90bc-1234abcd5678",
+      "name": "Job Enrich Config"
+    },
+    {
+      "parameters": {
+        "operation": "read",
+        "documentId": "={{ $('Job Enrich Config').item.json.spreadsheetId }}",
+        "sheetName": "={{ $('Job Enrich Config').item.json.sheetName }}",
+        "range": "",
+        "returnAll": true
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -540,
+        0
+      ],
+      "id": "b2c3d4e5-f607-48a9-901b-2345bcde6789",
+      "name": "Read JobPipeline rows",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "7OE0ZCwn0dn1HokX",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "a9b8c7d6-e5f4-4a3b-92c1-0d1e2f3a4b5c",
+              "leftValue": "={{ $json.application_status }}",
+              "rightValue": "new",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        -300,
+        0
+      ],
+      "id": "c3d4e5f6-0708-49a0-812b-3456cdef7890",
+      "name": "Only status=new"
+    },
+    {
+      "parameters": {
+        "batchSize": 10,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -60,
+        0
+      ],
+      "id": "d4e5f6a7-0819-4ab0-92cd-4567defa8901",
+      "name": "Split in Batches"
+    },
+    {
+      "parameters": {
+        "folderId": "default",
+        "title": "={{ $json.title ? `Aryaman_resume_${$json.title}` : 'Aryaman_resume' }}"
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        1120,
+        360
+      ],
+      "id": "e5f6a7b8-192a-4bc0-83de-5678efab9012",
+      "name": "Create tailored resume doc",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "gqGEp2UIXwb2kQM3",
+          "name": "n8n connection with docs-drive"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "folderId": "default",
+        "title": "unused"
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        1120,
+        40
+      ],
+      "id": "f6a7b8c9-2a3b-4cd0-84ef-6789fabc0123",
+      "name": "Create tailored resume doc (placeholder)",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "gqGEp2UIXwb2kQM3",
+          "name": "n8n connection with docs-drive"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "folderId": "default",
+        "title": "unused"
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        1120,
+        -280
+      ],
+      "id": "a7b8c9d0-3b4c-4de0-85fa-7890abcd1234",
+      "name": "Create tailored resume doc (placeholder 2)",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "gqGEp2UIXwb2kQM3",
+          "name": "n8n connection with docs-drive"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentURL": "={{ $('Job Enrich Config').item.json.resumeDocUrl }}"
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        320,
+        0
+      ],
+      "id": "1a2b3c4d-5e6f-4a7b-8c9d-0e1f2a3b4c5d",
+      "name": "Get base resume"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://integrate.api.nvidia.com/v1/chat/completions",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "openAiApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"qwen/qwen3-coder-480b-a35b-instruct\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"You are a job relevance classifier. For each candidate resume + job context, decide if the candidate is a good fit. Reply ONLY with a single JSON object of the form: {\\\"verdict\\\": true or false, \\\"reason\\\": \\\"short explanation\\\"}. No markdown, no extra text.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": {{ JSON.stringify(\n        \"##My Current Resume\\n\" + ($('Get base resume').item.json.content || '') + \"\\n\\n##Job Context\\nCompany: \" + ($json.company || '') + \"\\nTitle: \" + ($json.title || '') + \"\\nApply URL: \" + ($json.apply_url || '') + \"\\n\\nReturn ONLY JSON with verdict=true/false and reason.\"\n      ) }}\n    }\n  ],\n  \"temperature\": 0.1,\n  \"top_p\": 0.8,\n  \"max_tokens\": 256,\n  \"stream\": false\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        540,
+        0
+      ],
+      "id": "2b3c4d5e-6f70-4b81-9c02-1d2e3f4a5b6c",
+      "name": "LLM classify fit",
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "openAiApi": {
+          "id": "cktBRf5R1YBRHZod",
+          "name": "OpenAi account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "return items.map(item => {\n  const j = item.json;\n\n  const raw = j?.choices?.[0]?.message?.content ?? '';\n  let parsed;\n  try {\n    parsed = JSON.parse(raw);\n  } catch (e) {\n    return {\n      json: {\n        ...j,\n        verdict: null,\n        reason: 'Parse error',\n        rawModelOutput: raw\n      }\n    };\n  }\n\n  return {\n    json: {\n      ...j,\n      verdict: parsed.verdict,\n      reason: parsed.reason,\n      rawModelOutput: raw\n    }\n  };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        760,
+        0
+      ],
+      "id": "3c4d5e6f-7081-4c92-ad03-2e3f4a5b6c7d",
+      "name": "Parse verdict JSON"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "4d5e6f70-8192-4da3-be04-3f4a5b6c7d8e",
+              "leftValue": "={{ $json.verdict }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        980,
+        -160
+      ],
+      "id": "5e6f7081-92a3-4eb4-cf05-4a5b6c7d8e9f",
+      "name": "verdict = true"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "6f708192-a3b4-4fc5-d006-5b6c7d8e9f0a",
+              "leftValue": "={{ $json.verdict }}",
+              "rightValue": false,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        980,
+        160
+      ],
+      "id": "708192a3-b4c5-4ad6-e107-6c7d8e9f0a1b",
+      "name": "verdict = false"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://integrate.api.nvidia.com/v1/chat/completions",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "openAiApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"qwen/qwen3-coder-480b-a35b-instruct\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"You are a helpful, intelligent, expert resume writing assistant that drafts high converting resumes based on jobs. Given the candidate's existing resume and a job context, rewrite the resume to better highlight relevant skills and experience. This resume will be added to a Google Doc, so write it in HTML format that I can easily copy/paste. Do not output any backticks (no ```). Your first characters should be <html>. Never invent degrees, experience, or skills\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": {{ JSON.stringify(\n        \"##Overview\\nI'm applying to jobs.\\n\\n##Job Context\\nCompany: \" + ($json.company || '') + \"\\nTitle: \" + ($json.title || '') + \"\\nApply URL: \" + ($json.apply_url || '') + \"\\n\\n##My Current Resume\\n\" + ($('Get base resume').item.json.content || '') + \"\\n\\nRespond only with the customized, updated resume in HTML format. No explanations, no markdown, no JSON.\"\n      ) }}\n    }\n  ],\n  \"temperature\": 0.3,\n  \"top_p\": 0.8,\n  \"max_tokens\": 4096,\n  \"stream\": false\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1120,
+        -160
+      ],
+      "id": "8192a3b4-c5d6-4be7-f108-7d8e9f0a1b2c",
+      "name": "LLM rewrite resume (HTML)",
+      "credentials": {
+        "openAiApi": {
+          "id": "cktBRf5R1YBRHZod",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "html": "={{ $json.choices[0].message.content }}"
+      },
+      "type": "n8n-nodes-base.markdown",
+      "typeVersion": 1,
+      "position": [
+        1340,
+        -160
+      ],
+      "id": "92a3b4c5-d6e7-4cf8-1109-8e9f0a1b2c3d",
+      "name": "HTML -> markdown helper"
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "=https://www.googleapis.com/upload/drive/v3/files/{{ $('Create tailored resume doc').item.json.id }}?uploadType=media",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleDocsOAuth2Api",
+        "sendHeaders": true,
+        "specifyHeaders": "json",
+        "jsonHeaders": "{\n  \"Content-Type\":\"text/html\"\n}",
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "text/html",
+        "body": "={{ $('HTML -> markdown helper').item.json.choices[0].message.content }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1560,
+        -160
+      ],
+      "id": "a3b4c5d6-e7f8-4d09-2210-9f0a1b2c3d4e",
+      "name": "Upload tailored HTML resume to doc",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "gqGEp2UIXwb2kQM3",
+          "name": "n8n connection with docs-drive"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": "1QCRWbi-OQvlWemGdLs5O21g7nwO9_6dMiZZLBXTNtPI",
+        "sheetName": "JobPipeline",
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "job_hash": "={{ $json.job_hash }}",
+            "job_source": "={{ $json.job_source }}",
+            "job_url": "={{ $json.job_url }}",
+            "apply_url": "={{ $json.apply_url }}",
+            "company": "={{ $json.company }}",
+            "title": "={{ $json.title }}",
+            "location": "={{ $json.location }}",
+            "posted_at": "={{ $json.posted_at }}",
+            "ats_type": "={{ $json.ats_type }}",
+            "application_mode": "={{ $json.application_mode }}",
+            "fit_verdict": "={{ $json.verdict }}",
+            "fit_reason": "={{ $json.reason }}",
+            "fit_score": "={{ $json.fit_score || '' }}",
+            "resume_doc_url": "={{ $json.id ? `https://docs.google.com/document/d/${$json.id}/edit?pli=1` : '' }}",
+            "cover_letter_url": "={{ $json.cover_letter_url || '' }}",
+            "application_status": "fit_true_queued",
+            "missing_fields": "={{ $json.missing_fields || '' }}",
+            "approved_by": "",
+            "last_attempt_at": "",
+            "attempt_count": 0,
+            "error_last": "",
+            "created_at": "={{ new Date().toISOString() }}",
+            "updated_at": "={{ new Date().toISOString() }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "job_hash",
+              "displayName": "job_hash",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "job_source",
+              "displayName": "job_source",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "job_url",
+              "displayName": "job_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "apply_url",
+              "displayName": "apply_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "company",
+              "displayName": "company",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "title",
+              "displayName": "title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "location",
+              "displayName": "location",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "posted_at",
+              "displayName": "posted_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ats_type",
+              "displayName": "ats_type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "application_mode",
+              "displayName": "application_mode",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "fit_verdict",
+              "displayName": "fit_verdict",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "fit_reason",
+              "displayName": "fit_reason",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "fit_score",
+              "displayName": "fit_score",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "resume_doc_url",
+              "displayName": "resume_doc_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "cover_letter_url",
+              "displayName": "cover_letter_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "application_status",
+              "displayName": "application_status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "missing_fields",
+              "displayName": "missing_fields",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "approved_by",
+              "displayName": "approved_by",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "last_attempt_at",
+              "displayName": "last_attempt_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "attempt_count",
+              "displayName": "attempt_count",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "error_last",
+              "displayName": "error_last",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "created_at",
+              "displayName": "created_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "updated_at",
+              "displayName": "updated_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1780,
+        -160
+      ],
+      "id": "b3c4d5e6-f708-49a0-912b-4567cdef8901",
+      "name": "Append enriched fit_true row",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "7OE0ZCwn0dn1HokX",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": "1QCRWbi-OQvlWemGdLs5O21g7nwO9_6dMiZZLBXTNtPI",
+        "sheetName": "JobPipeline",
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "job_hash": "={{ $json.job_hash }}",
+            "job_source": "={{ $json.job_source }}",
+            "job_url": "={{ $json.job_url }}",
+            "apply_url": "={{ $json.apply_url }}",
+            "company": "={{ $json.company }}",
+            "title": "={{ $json.title }}",
+            "location": "={{ $json.location }}",
+            "posted_at": "={{ $json.posted_at }}",
+            "ats_type": "={{ $json.ats_type }}",
+            "application_mode": "={{ $json.application_mode }}",
+            "fit_verdict": "={{ $json.verdict }}",
+            "fit_reason": "={{ $json.reason }}",
+            "fit_score": "={{ $json.fit_score || '' }}",
+            "resume_doc_url": "",
+            "cover_letter_url": "",
+            "application_status": "rejected_fit",
+            "missing_fields": "fit=false",
+            "approved_by": "",
+            "last_attempt_at": "",
+            "attempt_count": 0,
+            "error_last": "",
+            "created_at": "={{ new Date().toISOString() }}",
+            "updated_at": "={{ new Date().toISOString() }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "job_hash",
+              "displayName": "job_hash",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "job_source",
+              "displayName": "job_source",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "job_url",
+              "displayName": "job_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "apply_url",
+              "displayName": "apply_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "company",
+              "displayName": "company",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "title",
+              "displayName": "title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "location",
+              "displayName": "location",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "posted_at",
+              "displayName": "posted_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ats_type",
+              "displayName": "ats_type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "application_mode",
+              "displayName": "application_mode",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "fit_verdict",
+              "displayName": "fit_verdict",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "fit_reason",
+              "displayName": "fit_reason",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "fit_score",
+              "displayName": "fit_score",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "resume_doc_url",
+              "displayName": "resume_doc_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "cover_letter_url",
+              "displayName": "cover_letter_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "application_status",
+              "displayName": "application_status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "missing_fields",
+              "displayName": "missing_fields",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "approved_by",
+              "displayName": "approved_by",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "last_attempt_at",
+              "displayName": "last_attempt_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "attempt_count",
+              "displayName": "attempt_count",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "error_last",
+              "displayName": "error_last",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "created_at",
+              "displayName": "created_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "updated_at",
+              "displayName": "updated_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1780,
+        160
+      ],
+      "id": "c4d5e6f7-f809-49a0-9abc-5678cdef9012",
+      "name": "Append enriched fit_false row",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "7OE0ZCwn0dn1HokX",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Job Enrich Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Job Enrich Config": {
+      "main": [
+        [
+          {
+            "node": "Read JobPipeline rows",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read JobPipeline rows": {
+      "main": [
+        [
+          {
+            "node": "Only status=new",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Only status=new": {
+      "main": [
+        [
+          {
+            "node": "Split in Batches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split in Batches": {
+      "main": [
+        [
+          {
+            "node": "Get base resume",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get base resume": {
+      "main": [
+        [
+          {
+            "node": "LLM classify fit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "LLM classify fit": {
+      "main": [
+        [
+          {
+            "node": "Parse verdict JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse verdict JSON": {
+      "main": [
+        [
+          {
+            "node": "verdict = true",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "verdict = false",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "verdict = true": {
+      "main": [
+        [
+          {
+            "node": "LLM rewrite resume (HTML)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "LLM rewrite resume (HTML)": {
+      "main": [
+        [
+          {
+            "node": "HTML -> markdown helper",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTML -> markdown helper": {
+      "main": [
+        [
+          {
+            "node": "Create tailored resume doc",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create tailored resume doc": {
+      "main": [
+        [
+          {
+            "node": "Upload tailored HTML resume to doc",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload tailored HTML resume to doc": {
+      "main": [
+        [
+          {
+            "node": "Append enriched fit_true row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "verdict = false": {
+      "main": [
+        [
+          {
+            "node": "Append enriched fit_false row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "70b1a1cd6dab4fbfba2a492bf6c64d8245f61277911aa7e0ed8b50ca709e8b1a"
+  },
+  "versionId": "f1e2d3c4-b5a6-4d7e-8f90-1a2b3c4d5e6f",
+  "id": "job-enrich-template"
+}
+

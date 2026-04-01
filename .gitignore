@@ -1,0 +1,14 @@
+.DS_Store
+.env
+.env.*
+*.log
+*.pem
+*.key
+*.p12
+*.crt
+*.cer
+*.sqlite*
+node_modules/
+dist/
+coverage/
+.cursor/

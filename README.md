@@ -7,7 +7,7 @@
 ![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
-> A fully self-hosted workflow automation system that automatically applies to jobs across LinkedIn, Indeed, and other platforms — tracking status in Google Sheets and sending Gmail notifications.  
+> A fully self-hosted workflow automation system that **scrapes LinkedIn jobs**, **classifies relevance with an LLM**, and **writes results to Google Sheets** (optionally rewriting your resume per job into a new Google Doc).  
 > Live instance: **https://n8n.aryamandev.me**
 
 ---
@@ -57,10 +57,9 @@
                           └─────────────────────────────┘
                                         │
           ┌─────────────────────────────▼──────────────────────────----┐
-          │                    n8n Workflow                            │
-          │  Google Sheets ──► Filter ──► Apply ──► Update ──► Gmail   │
-          │  (job list)       (pending)  (LinkedIn/  (status)  (notify)|
-          │                              Indeed/etc)                   │
+          │                    n8n Workflow                              │
+          │  LinkedIn scrape ─► Filter ─► LLM classify ─► Sheets/Docs     │
+          │  (Apify actor)     (rules)   (fit?)        (log + rewrite)    │
           └──────────────────────────────────────────────────────────--┘
 ```
 
@@ -234,6 +233,8 @@ Option A — **Import from this repo:**
 1. Download `workflows/job-automation.json`
 2. In n8n: **Workflows → Import from File**
 
+After import, open the `Job Search URL` Set node and replace the `REPLACE_ME` placeholders. See [`docs/configuration.md`](docs/configuration.md).
+
 Option B — **Import official template:**
 1. Go to [n8n template #5906](https://n8n.io/workflows/5906-automated-job-applications-and-status-tracking-with-linkedin-indeed-and-google-sheets/)
 2. Click **Use workflow** (requires n8n login)
@@ -371,6 +372,9 @@ docker compose logs caddy | grep -i cert
 ├── workflows/
 │   └── job-automation.json          # Exported n8n workflow (import this)
 ├── docs/
+│   ├── configuration.md             # What to change after import
+│   └── workflow-overview.md         # Node graph + behavior
+├── docs/
 │   ├── screenshots/                 # DigitalOcean, Namecheap, n8n UI screenshots
 │   └── architecture.png             # Architecture diagram
 └── notes/
@@ -404,7 +408,7 @@ Save the JSON into `workflows/job-automation.json` and commit it.
 
 ## Author
 
-**Aryaman** · [aryamandev.me](https://aryamandev.me) · [GitHub @dev4-gpt](https://github.com/dev4-gpt)  
+**Aryaman Singh Dev** · [aryamandev.me](https://aryamandev.me) · [GitHub @dev4-gpt](https://github.com/dev4-gpt)  
 Built with n8n, DigitalOcean, Namecheap, Google Sheets & ☕
 ```
 
