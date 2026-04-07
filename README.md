@@ -428,5 +428,4 @@ gh repo create n8n-job-automation --public --push --source=.
 
 (Requires the GitHub CLI `gh` — install with `brew install gh` on Mac if you don't have it.)
 
-Sources
-[1] Screenshot-2026-03-06-at-3.45.23-PM.jpeg https://ppl-ai-file-upload.s3.amazonaws.com/web/direct-files/attachments/images/114099916/9934f74b-6dcb-41a3-8c26-4e8db1720850/Screenshot-2026-03-06-at-3.45.23-PM.jpeg
+
