@@ -429,3 +429,5 @@ gh repo create n8n-job-automation --public --push --source=.
 (Requires the GitHub CLI `gh` — install with `brew install gh` on Mac if you don't have it.)
 
 
+![Image - no preview - square](https://github.com/user-attachments/assets/555dfec1-fd40-4117-9bfa-6e8dc4bc1f75)
+
