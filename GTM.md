@@ -150,11 +150,3 @@ docker compose up -d --force-recreate
     └── gtm-marketing/       # Webhook targets and cross-platform notification trees
 
 ```
-
-```
-
-***
-
-Once pasted, scroll to the bottom of your GitHub page, hit **Commit changes...**, and your documentation will perfectly align with your brand-new [DigitalOcean compute environment](https://cloud.digitalocean.com/projects/7b910c0a-76fa-4541-bf66-3d7e9ffc6587/resources?i=b309ed) and the new [n8n canvas](http://67.207.89.85:5678/workflow/iMepWoUU5t6FWPVP?new=true).
-
-```
