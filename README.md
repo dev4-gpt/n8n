@@ -8,7 +8,8 @@
 ![License](https://img.shields.io/badge/license-MIT-green)
 
 > A fully self-hosted workflow automation system that **scrapes LinkedIn jobs**, **classifies relevance with an LLM**, and **writes results to Google Sheets** (optionally rewriting your resume per job into a new Google Doc).  
-> Live instance: **https://n8n.aryamandev.me**
+> Live instance (old with domain) : **https://n8n.aryamandev.me**
+> Live instance (new without domain) : **http://67.207.89.85:5678**
 
 ---
 
@@ -32,7 +33,7 @@
 
 ---
 
-## Architecture Overview
+## Architecture Overview (older setup)
 
 ```
 ┌────────────────────────────────────────────────────────────┐
@@ -80,14 +81,16 @@
 Before starting, you'll need:
 
 - A **DigitalOcean** account with billing enabled
-- A **Namecheap** domain (I used `aryamandev.me`)
-- A **Mac or Linux** terminal to SSH into the droplet
+- A **Namecheap** domain if you want a specific website name (I used `aryamandev.me`)
+- A **Mac or Linux** terminal to SSH into the droplet (SSH public key authorized on the host machine)
 - A **Google account** for:
   - Google Sheets (job list + status tracking)
   - Gmail (email notifications)
 - Optional: API credentials for job platforms (LinkedIn OAuth2, Indeed API)
 
 ---
+
+THESE ARE THE DIFFERENT SETUPS WE TRIED ATTEMPTING. WHAT WE ATTEMPTED BELOW SHOWS THE METHODOLOGY WITH THE DOMAIN NAME. 
 
 ## Step 1 — Create the DigitalOcean Droplet
 
